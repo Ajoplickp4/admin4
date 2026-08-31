@@ -6,15 +6,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 360  # حداکثر ۶ ساعت
 
     steps:
       - name: 1. Update & Install Dependencies
         run: |
           sudo apt update
           sudo apt install -y xrdp xfce4 xfce4-goodies
-          
-          # Add Tailscale official repository
           curl -fsSL https://tailscale.com/install.sh | sudo bash
 
       - name: 2. Configure XRDP
@@ -32,7 +30,7 @@ jobs:
 
       - name: 4. Connect to Tailscale VPN
         env:
-          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}
+          TAILSCALE_AUTHKEY: ${{ secrets.TAILSCALE_AUTHKEY }}  # ✅ اصلاح شد
         run: |
           sudo tailscale up --authkey="$TAILSCALE_AUTHKEY" --hostname="github-rdp-linux"
           sleep 5
@@ -45,9 +43,9 @@ jobs:
           echo "  >> Connect via Microsoft Remote Desktop to: $TS_IP"
           echo "=================================================="
 
-      - name: 5. Keep Server Alive (48 Hours)
+      - name: 5. Keep Server Alive (تا ۶ ساعت)
         run: |
-          for i in {1..2880}; do
+          for i in {1..360}; do  # 360 دقیقه = ۶ ساعت
             sleep 60
-            echo "[$i/2880] Server running..."
+            echo "[$i/360] Server running... (Active for $i minutes)"
           done
